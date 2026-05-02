@@ -12,4 +12,4 @@ the only changes that will really be made to CAU is changing the target that CAU
 
 thats literally ALL that CAU does. please, look through it, its a VERY basic program.
 
-its current version target of MultiplayerChat to download: 0.3.1 . 
+its current version target of MultiplayerChat to download: 0.3.2 . 
