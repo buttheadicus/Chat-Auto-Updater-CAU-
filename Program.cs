@@ -57,7 +57,7 @@ public class UpdaterForm : Form
     private readonly string _beatSaberPath;
 
     /// <summary>Shipped CAU builds pin one Multiplayer Chat GitHub release tag for predictable installs.</summary>
-    private const string TargetReleaseTag = "v0.3.2";
+    private const string TargetReleaseTag = "v0.3.3";
 
     private static readonly string ReleasesPageUrl =
         $"https://github.com/buttheadicus/BeatSaber-Multiplayer-Chat/releases/tag/{TargetReleaseTag}";
