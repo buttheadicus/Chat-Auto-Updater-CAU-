@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
 
 namespace ChatAutoUpdater;
 
@@ -183,22 +183,43 @@ public class UpdaterForm : Form
     private static bool TryGetAssetBrowserUrl(string json, string assetFileName, out string url)
     {
         url = "";
-        try
+        if (string.IsNullOrEmpty(json) || string.IsNullOrEmpty(assetFileName))
+            return false;
+
+        var namePattern = "\"name\"\\s*:\\s*\"" + Regex.Escape(assetFileName) + "\"";
+        var nameRx = new Regex(namePattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        var urlRx = new Regex("\"browser_download_url\"\\s*:\\s*\"(https://[^\"]+)\"",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        foreach (Match nameMatch in nameRx.Matches(json))
         {
-            var jo = JObject.Parse(json);
-            if (jo["assets"] is not JArray assets)
-                return false;
-            foreach (var a in assets)
+            var i = nameMatch.Index;
+            var start = Math.Max(0, i - 2800);
+            var end = Math.Min(json.Length, i + 2800);
+            var window = json.Substring(start, end - start);
+            var nameRel = i - start;
+
+            // Prefer URL after this "name" (when JSON lists name before browser_download_url).
+            var afterName = urlRx.Match(window, nameRel);
+            if (afterName.Success)
             {
-                if (!string.Equals(a?["name"]?.ToString(), assetFileName, StringComparison.OrdinalIgnoreCase))
-                    continue;
-                url = a["browser_download_url"]?.ToString() ?? "";
-                return !string.IsNullOrEmpty(url);
+                url = afterName.Groups[1].Value;
+                return url.Length > 0;
             }
-        }
-        catch
-        {
-            /* ignore */
+
+            // Else GitHub often puts browser_download_url before name: use last URL before this name in the window.
+            Match bestBefore = null;
+            foreach (Match um in urlRx.Matches(window))
+            {
+                if (um.Index < nameRel && (bestBefore == null || um.Index > bestBefore.Index))
+                    bestBefore = um;
+            }
+
+            if (bestBefore != null)
+            {
+                url = bestBefore.Groups[1].Value;
+                return url.Length > 0;
+            }
         }
 
         return false;
