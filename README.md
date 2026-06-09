@@ -12,4 +12,4 @@ the only changes that will really be made to CAU is changing the target that CAU
 
 thats literally ALL that CAU does. please, look through it, its a VERY basic program.
 
-its current release tag target on MultiplayerChat: 2 . 
+its current release tag target on MultiplayerChat: 4 . 

@@ -57,7 +57,7 @@ public class UpdaterForm : Form
     private readonly string _beatSaberPath;
 
     /// <summary>Shipped CAU builds pin one numeric GitHub release tag (0, 1, 2, ...) for hotfix installs.</summary>
-    private const string TargetReleaseTag = "2";
+    private const string TargetReleaseTag = "4";
 
     private static readonly string ReleasesPageUrl =
         $"https://github.com/buttheadicus/BeatSaber-Multiplayer-Chat/releases/tag/{TargetReleaseTag}";
